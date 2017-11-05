@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -18,6 +19,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 import expressão.Expressao;
+import expressão.No;
 
 @SuppressWarnings("serial")
 public class TelaPrincipal extends JFrame {
@@ -69,6 +71,17 @@ public class TelaPrincipal extends JFrame {
 		campoExpressao.setColumns(10);
 		
 		JButton btnOk = new JButton("OK");
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				No exp = Expressao.create().transformaEmArvore(campoExpressao.getText(), false);
+				
+				if(exp!=null) {
+					System.out.println(exp.toString());
+				}
+				
+				//((x*2)/(5+2))+(2/(5*4))
+			}
+		});
 		
 		JLabel lblRepresentaoDarvore = new JLabel("Representação da Árvore");
 		lblRepresentaoDarvore.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -167,8 +180,5 @@ public class TelaPrincipal extends JFrame {
 			}
 		});
 		panel_1.add(btnLimparTudo);
-		
-		System.out.println(Expressao.create().transformaEmArvore("9+9"));
-		
 	}
 }

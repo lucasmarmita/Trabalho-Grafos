@@ -1,3 +1,16 @@
+/* Classe responsável por analizar a sintaxe da expressão e transformar a mesma em uma árvore binária.
+ * 
+ * Autores: Lucas Claro / Marcelo Rezin
+ * 
+ * Definições importantes:
+ * 
+ * #Grau/Nivel do operador: Significa a ordem da resolução matemática que o operador possui: / e * são resolvidos primeiro e possuem maior grau,
+ * consequentemente + e - são resolvidos após e possuiem menor grau.
+ * 
+ * #Grau/Nivel da expressao: Representa a ordem das subexpressoes a serem resolvidas. Ex.: ((c)b)a, onde a é de nivel 0 e deve ser transformada em 
+ * no primeiro, b é de nivel 1 e assim respectivamente.
+ */
+
 package expressão;
 
 import java.util.ArrayList;
@@ -70,7 +83,6 @@ public class Expressao {
 			}
 			
 			if(parenteses != 0) {
-				System.out.println(parenteses);
 				return false;
 			}
 		}
@@ -79,65 +91,97 @@ public class Expressao {
 		return true;
 	}
 	
-	public No transformaEmArvore(String expressao) {
-		//expressao = expressao.replaceAll(" ", "");// Remove todos os espaços
+	public No transformaEmArvore(String expressao, boolean considerarMenorGrau) {
+		expressao = expressao.replaceAll(" ", "");// Remove todos os espaços
 		
+		if(!analisaSintaxe(expressao)) {
+			return null;
+		}
+		
+		boolean menorGrau = false; //flag para saber se existe sinal de + ou -
 		List<String> caracteres = new ArrayList<>(Arrays.asList(expressao.split("")));
 		String direita = "";
 		String esquerda = "";
 		
 		No primeiro = new No();
 		
+		int parenteses = 0;
 		
+		if(expressao.matches("\\d*|[a-zA-Z]*")) { //caso não exista mais operações
+			primeiro.setOperacao(expressao);
+			return primeiro;
+		}
 		
 		for (int i=0; i<caracteres.size(); i++) {
-			if(caracteres.get(i).matches("\\+|-|\\*|\\/")) {
-				for(int j=0; j<i; j++) {
-					direita += caracteres.get(j);
+			
+			/*Contagem de parenteses para saber o nivel da expressao*/
+			if(caracteres.get(i).equals("(")) {
+				parenteses++;
+				
+				continue;
+			}else if(caracteres.get(i).equals(")")) {
+				parenteses--;
+				
+				continue;
+			}
+			
+			/*Quando estiver no nivel mais baixo*/
+			if(parenteses == 0) {
+				if(menorGrau == false && caracteres.get(i).matches("\\+|-")) { //marca a flag para saber que existe operador de baixo nivel
+					menorGrau = true;
 				}
 				
-				for(int k=i+1; k<caracteres.size(); k++) {
-					esquerda += caracteres.get(k);
+				if(caracteres.get(i).matches((considerarMenorGrau==false ? "\\*|\\/" : "\\+|-"))) { //Define o nó conforme a flag de nivel de operador 
+					
+					/*Encontra todo o lado esquerdo da expressao*/
+					for(int j=0; j<i; j++) { 
+						esquerda += caracteres.get(j);
+					}
+					
+					/*Encontra todo o lado direito da expressao*/
+					for(int k=i+1; k<caracteres.size(); k++) {
+						direita += caracteres.get(k);
+					}
+					
+					primeiro.setOperacao(caracteres.get(i));
+					
+					/*Verifica se é necessario a criação de nós na direita e esquerda*/
+					if(!esquerda.trim().isEmpty()) {
+						primeiro.setEsquerdo(transformaEmArvore(esquerda, false));
+					}
+					if(!direita.trim().isEmpty()) {
+						primeiro.setDireito(transformaEmArvore(direita, false));
+					}
+					
+					break;
 				}
-				
-				primeiro.setOperacao(caracteres.get(i));
-				
-				primeiro.setEsquerdo(transformaEmArvore(esquerda));
-				primeiro.setDireito(transformaEmArvore(direita));
-				
-				break;
+			}
+		}
+		
+		/*
+		 * Se o nó chegar vazio, exitem 2 motivos:
+		 * 1o- Não existe expressao no nivel atual e é preciso remover parenteses
+		 * 2o- Significa que é necessário avalizar operadores de baixo nivel; 
+		 */
+		if(primeiro.getOperacao()==null) {
+			if(menorGrau == false) {
+				primeiro = transformaEmArvore(removeParenteses(caracteres),false);
+			}else {
+				primeiro = transformaEmArvore(expressao, true);
 			}
 		}
 		
 		return primeiro;
 	}
 	
-	public List<String> encontraExpressao(List<String> caracteres) {
+	public String removeParenteses(List<String> caracteres) {
 		
-		int parenteses = 1; //contagem para saber se os parenteses foram fechados
+		String expressao="";
 		
-		List<String> subList = new ArrayList<>();
-		
-		if(caracteres.get(0).equals("(")) {
-			
-			for(int i=1; i<caracteres.size(); i++) {
-				if(caracteres.get(i).equals("(")) {
-					parenteses ++;
-				}else if(caracteres.get(i).equals(")")) {
-					parenteses --;
-				}
-				
-				if(parenteses != 0) {
-					subList.add(caracteres.get(i));
-				}
-				
-				
-			}
+		for(int i=1; i<caracteres.size()-1; i++) {
+			expressao += caracteres.get(i);
 		}
 		
-		
-		
-		
-		return null;
+		return expressao;
 	}
 }
