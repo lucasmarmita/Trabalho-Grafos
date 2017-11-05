@@ -6,9 +6,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -22,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import expressão.Expressao;
 
+@SuppressWarnings("serial")
 public class TelaPrincipal extends JFrame {
 
 	private JPanel contentPane;
@@ -169,6 +167,8 @@ public class TelaPrincipal extends JFrame {
 			}
 		});
 		panel_1.add(btnLimparTudo);
+		
+		System.out.println(Expressao.create().transformaEmArvore("9+9"));
 		
 	}
 }

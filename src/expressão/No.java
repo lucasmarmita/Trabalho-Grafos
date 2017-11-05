@@ -6,8 +6,13 @@ public class No {
 	private No direito;
 	private String operacao;
 	
+	public No() {
+		this.esquerdo = null;
+		this.direito = null;
+		this.operacao = null;
+	}
+	
 	public No(No esquerdo, No direito, String operacao) {
-		super();
 		this.esquerdo = esquerdo;
 		this.direito = direito;
 		this.operacao = operacao;
@@ -35,5 +40,24 @@ public class No {
 
 	public void setOperacao(String operacao) {
 		this.operacao = operacao;
+	}
+	
+	public String toString() {
+		String dir;
+		String esq;
+		
+		if(direito == null) {
+			dir = "nulo";
+		}else {
+			dir = direito.toString();
+		}
+		
+		if(esquerdo == null) {
+			esq = "nulo";
+		}else {
+			esq = esquerdo.toString();
+		}
+		
+		return "\nRaiz: " + operacao + "\nDireito: " + dir + "\nEsquerdo: " + esq + "\n";
 	}
 }
