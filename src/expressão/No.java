@@ -1,5 +1,9 @@
 package expressão;
 
+import java.util.Set;
+
+import javax.xml.transform.SourceLocator;
+
 public class No {
 	
 	private No esquerdo;
@@ -59,5 +63,29 @@ public class No {
 		}
 		
 		return "\nRaiz: " + operacao + "\nDireito: " + dir + "\nEsquerdo: " + esq + "\n";
+	}	
+	
+	public No caminhoPolones(No no){
+		//pŕe-ordem
+		if(no != null){
+			operacao = no.getOperacao();
+            caminhoPolones(no.esquerdo);
+            caminhoPolones(no.direito);
+
+
+        }
+		return no;
 	}
+
+	public No caminhoPolonesReversa(No no) {
+		if(no != null){
+        	caminhoPolonesReversa(no.esquerdo);
+        	caminhoPolonesReversa(no.direito);
+            operacao = no.getOperacao();
+        }
+		return no;
+	}
+	
 }
+
+
